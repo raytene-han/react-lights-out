@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Cell from "./Cell";
 import "./Board.css";
+import { createBoard, hasWon, flipNeighboringCells } from "./utils";
 
 /** Game board of Lights out.
  *
@@ -27,47 +28,34 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
-  const [board, setBoard] = useState(createBoard());
+function Board({ nrows = 5, ncols = 7, chanceLightStartsOn = 0.25 }) {
+  const [board, setBoard] = useState(createBoard(nrows, ncols, chanceLightStartsOn));
 
-  /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
-  function createBoard() {
-    let initialBoard = [];
-    // TODO: create array-of-arrays of true/false values
-    return initialBoard;
-  }
-
-  function hasWon() {
-    // TODO: check the board in state to determine whether the player has won.
-  }
 
   function flipCellsAround(coord) {
-    setBoard(oldBoard => {
-      const [y, x] = coord.split("-").map(Number);
-
-      const flipCell = (y, x, boardCopy) => {
-        // if this coord is actually on board, flip it
-
-        if (x >= 0 && x < ncols && y >= 0 && y < nrows) {
-          boardCopy[y][x] = !boardCopy[y][x];
-        }
-      };
-
-      // TODO: Make a (deep) copy of the oldBoard
-
-      // TODO: in the copy, flip this cell and the cells around it
-
-      // TODO: return the copy
-    });
+    setBoard(oldBoard => flipNeighboringCells(coord, oldBoard, nrows, ncols));
   }
 
-  // if the game is won, just show a winning msg & render nothing else
+  return (
+    <div>
+      <table>
+        <tbody>
+          {board.map((row, y) => {
+            return (<tr key={y}>
+              {row.map((cell, x) =>
+                <Cell flipCellsAroundMe={flipCellsAround}
+                  isLit={cell}
+                  coord={`${y}-${x}`}
+                  key={`${y}-${x}`} />
+              )}
+            </tr>);
+          })}
+        </tbody>
+      </table>
 
-  // TODO
-
-  // make table board
-
-  // TODO
+      {hasWon(board) && <h3>You won!</h3>}
+    </div>
+  );
 }
 
 export default Board;
