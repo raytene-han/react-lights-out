@@ -18,7 +18,7 @@ function hasWon(board) {
 
   for (let row of board) {
     for (let cell of row) {
-      if (!cell) return false;
+      if (cell) return false;
     }
   }
 
